@@ -127,12 +127,12 @@ export function ReferralList({ refreshTrigger }: ReferralListProps) {
                 <TableBody>
                   {referrals.map((referral) => (
                     <TableRow key={referral.id}>
-                      <TableCell className="font-medium">{referral.clientName}</TableCell>
-                      <TableCell>{referral.referringCompany}</TableCell>
+                      <TableCell className="font-medium">{referral.client_name}</TableCell>
+                      <TableCell>{referral.referring_company}</TableCell>
                       <TableCell>{referral.service}</TableCell>
                       <TableCell>{getStatusBadge(referral.status)}</TableCell>
                       <TableCell>
-                        {formatDistance(new Date(referral.createdAt), new Date(), { 
+                        {formatDistance(new Date(referral.created_at), new Date(), { 
                           addSuffix: true 
                         })}
                       </TableCell>
@@ -171,7 +171,7 @@ export function ReferralList({ refreshTrigger }: ReferralListProps) {
                     <Building className="mr-2 h-4 w-4 text-dubai-teal" />
                     <span className="text-sm font-medium">Referring Company</span>
                   </div>
-                  <p className="text-base">{selectedReferral.referringCompany}</p>
+                  <p className="text-base">{selectedReferral.referring_company}</p>
                 </div>
                 
                 <div>
@@ -179,7 +179,7 @@ export function ReferralList({ refreshTrigger }: ReferralListProps) {
                     <User className="mr-2 h-4 w-4 text-dubai-teal" />
                     <span className="text-sm font-medium">Client</span>
                   </div>
-                  <p className="text-base">{selectedReferral.clientName}</p>
+                  <p className="text-base">{selectedReferral.client_name}</p>
                 </div>
               </div>
               
@@ -189,7 +189,7 @@ export function ReferralList({ refreshTrigger }: ReferralListProps) {
                     <User className="mr-2 h-4 w-4 text-dubai-teal" />
                     <span className="text-sm font-medium">Contact Person</span>
                   </div>
-                  <p className="text-base">{selectedReferral.contactPerson}</p>
+                  <p className="text-base">{selectedReferral.contact_person}</p>
                 </div>
                 
                 <div>
@@ -198,7 +198,7 @@ export function ReferralList({ refreshTrigger }: ReferralListProps) {
                     <span className="text-sm font-medium">Created</span>
                   </div>
                   <p className="text-base">
-                    {new Date(selectedReferral.createdAt).toLocaleDateString()}
+                    {new Date(selectedReferral.created_at).toLocaleDateString()}
                   </p>
                 </div>
               </div>
@@ -208,14 +208,14 @@ export function ReferralList({ refreshTrigger }: ReferralListProps) {
                   <div className="flex items-center mb-2">
                     <span className="text-sm font-medium">Email</span>
                   </div>
-                  <p className="text-base">{selectedReferral.contactEmail}</p>
+                  <p className="text-base">{selectedReferral.contact_email}</p>
                 </div>
                 
                 <div>
                   <div className="flex items-center mb-2">
                     <span className="text-sm font-medium">Phone</span>
                   </div>
-                  <p className="text-base">{selectedReferral.contactPhone}</p>
+                  <p className="text-base">{selectedReferral.contact_phone}</p>
                 </div>
               </div>
               

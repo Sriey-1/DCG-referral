@@ -157,10 +157,10 @@ export function DealForm({ onDealCreated }: DealFormProps) {
                           <SelectValue placeholder="Select referral" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">None</SelectItem>
+                          <SelectItem value="none">None</SelectItem>
                           {referrals.map(referral => (
                             <SelectItem key={referral.id} value={referral.id}>
-                              {referral.clientName}
+                              {referral.client_name}
                             </SelectItem>
                           ))}
                         </SelectContent>
