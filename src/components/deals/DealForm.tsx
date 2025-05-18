@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { BriefcaseBusiness } from "lucide-react";
+import { dealService, referralService } from "@/services/api";
 import { Referral } from "../referrals/ReferralList";
 
 const formSchema = z.object({
@@ -52,34 +53,42 @@ export function DealForm({ onDealCreated }: DealFormProps) {
   // Load referrals when dialog opens
   const handleDialogChange = (isOpen: boolean) => {
     if (isOpen) {
-      const storedReferrals = JSON.parse(localStorage.getItem("referrals") || "[]");
-      setReferrals(storedReferrals);
+      loadReferrals();
     }
     setOpen(isOpen);
+  };
+
+  const loadReferrals = async () => {
+    try {
+      const data = await referralService.getAllReferrals();
+      setReferrals(data);
+    } catch (error) {
+      console.error("Error loading referrals:", error);
+    }
   };
 
   // Auto-fill client name when a referral is selected
   const handleReferralChange = (value: string) => {
     const selectedReferral = referrals.find(ref => ref.id === value);
     if (selectedReferral) {
-      form.setValue("clientName", selectedReferral.clientName);
+      form.setValue("clientName", selectedReferral.client_name);
     }
   };
 
   async function onSubmit(data: FormValues) {
     try {
-      // Here we would typically connect to a backend API to save the deal
-      console.log("Creating new deal:", data);
-      
-      // For now, let's save to localStorage
-      const existingDeals = JSON.parse(localStorage.getItem("deals") || "[]");
-      const newDeal = {
-        id: Math.random().toString(36).substring(2, 9),
-        ...data,
-        createdAt: new Date().toISOString(),
+      // Map form data to API fields
+      const dealData = {
+        title: data.title,
+        referral_id: data.referralId || null,
+        value: data.value,
+        client_name: data.clientName,
+        stage: data.stage,
+        expected_close_date: data.expectedCloseDate,
+        description: data.description,
       };
       
-      localStorage.setItem("deals", JSON.stringify([...existingDeals, newDeal]));
+      await dealService.createDeal(dealData);
       
       toast({
         title: "Deal created",
@@ -90,6 +99,8 @@ export function DealForm({ onDealCreated }: DealFormProps) {
       form.reset();
       onDealCreated();
     } catch (error) {
+      console.error("Error creating deal:", error);
+      
       toast({
         variant: "destructive",
         title: "Failed to create deal",

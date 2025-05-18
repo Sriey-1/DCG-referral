@@ -30,18 +30,19 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { formatDistance } from "date-fns";
+import { referralService } from "@/services/api";
 
 export interface Referral {
   id: string;
-  referringCompany: string;
-  clientName: string;
-  contactPerson: string;
-  contactEmail: string;
-  contactPhone: string;
+  referring_company: string;
+  client_name: string;
+  contact_person: string;
+  contact_email: string;
+  contact_phone: string;
   service: string;
   status: string;
   notes?: string;
-  createdAt: string;
+  created_at: string;
 }
 
 interface ReferralListProps {
@@ -52,11 +53,22 @@ export function ReferralList({ refreshTrigger }: ReferralListProps) {
   const [referrals, setReferrals] = useState<Referral[]>([]);
   const [selectedReferral, setSelectedReferral] = useState<Referral | null>(null);
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch referrals from localStorage (in a real app, this would be an API call)
-    const storedReferrals = JSON.parse(localStorage.getItem("referrals") || "[]");
-    setReferrals(storedReferrals);
+    const fetchReferrals = async () => {
+      try {
+        setIsLoading(true);
+        const data = await referralService.getAllReferrals();
+        setReferrals(data);
+      } catch (error) {
+        console.error("Error fetching referrals:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchReferrals();
   }, [refreshTrigger]);
 
   const handleViewDetails = (referral: Referral) => {

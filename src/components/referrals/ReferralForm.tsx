@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { FolderPlus } from "lucide-react";
+import { referralService } from "@/services/api";
 
 const formSchema = z.object({
   referringCompany: z.string().min(2, { message: "Company name is required" }),
@@ -51,18 +52,19 @@ export function ReferralForm({ onReferralCreated }: ReferralFormProps) {
 
   async function onSubmit(data: FormValues) {
     try {
-      // Here we would typically connect to a backend API to save the referral
-      console.log("Creating new referral:", data);
-      
-      // For now, let's save to localStorage to maintain state
-      const existingReferrals = JSON.parse(localStorage.getItem("referrals") || "[]");
-      const newReferral = {
-        id: Math.random().toString(36).substring(2, 9),
-        ...data,
-        createdAt: new Date().toISOString(),
+      // Map form data to API fields
+      const referralData = {
+        referring_company: data.referringCompany,
+        client_name: data.clientName,
+        contact_person: data.contactPerson,
+        contact_email: data.contactEmail,
+        contact_phone: data.contactPhone,
+        service: data.service,
+        status: data.status,
+        notes: data.notes,
       };
       
-      localStorage.setItem("referrals", JSON.stringify([...existingReferrals, newReferral]));
+      await referralService.createReferral(referralData);
       
       toast({
         title: "Referral created",
@@ -73,6 +75,8 @@ export function ReferralForm({ onReferralCreated }: ReferralFormProps) {
       form.reset();
       onReferralCreated();
     } catch (error) {
+      console.error("Error creating referral:", error);
+      
       toast({
         variant: "destructive",
         title: "Failed to create referral",

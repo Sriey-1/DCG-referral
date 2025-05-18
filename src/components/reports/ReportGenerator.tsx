@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { 
   Card,
@@ -18,60 +17,57 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { FileText, Download, FileSpreadsheet } from "lucide-react";
-import { Referral } from "../referrals/ReferralList";
-import { Deal } from "../deals/DealList";
+import { reportService } from "@/services/api";
 
 export function ReportGenerator() {
   const [reportType, setReportType] = useState<string>("referrals");
-  const [sortBy, setSortBy] = useState<string>("clientName");
+  const [sortBy, setSortBy] = useState<string>("client_name");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { toast } = useToast();
 
-  const generateExcelReport = () => {
+  const generateExcelReport = async () => {
     setIsLoading(true);
     
-    // Simulate API call delay
-    setTimeout(() => {
-      try {
-        // Get data based on report type
-        const data = reportType === "referrals" 
-          ? JSON.parse(localStorage.getItem("referrals") || "[]")
-          : JSON.parse(localStorage.getItem("deals") || "[]");
-        
-        // Sort data based on sortBy field
-        const sortedData = [...data].sort((a, b) => {
-          // Check if sorting by a numeric field
-          if (sortBy === "value" && reportType === "deals") {
-            return parseFloat(a[sortBy]) - parseFloat(b[sortBy]);
-          }
-          
-          // Default string comparison (case insensitive)
-          return a[sortBy]?.localeCompare(b[sortBy], undefined, {sensitivity: 'base'}) || 0;
-        });
-        
-        // In a real application, this would generate an actual Excel file
-        // For now, we'll just convert to CSV format
-        const csvContent = generateCSV(sortedData);
+    try {
+      let data;
+      
+      // Get data based on report type
+      if (reportType === "referrals") {
+        data = await reportService.getReferralsReport(sortBy);
+      } else {
+        data = await reportService.getDealsReport(sortBy);
+      }
+      
+      // Generate and download CSV
+      if (data && data.length > 0) {
+        const csvContent = generateCSV(data);
         downloadCSV(csvContent, `${reportType}_report.csv`);
         
         toast({
           title: "Report Generated",
           description: `Your ${reportType} report has been generated successfully.`,
         });
-      } catch (error) {
+      } else {
         toast({
-          variant: "destructive",
-          title: "Failed to generate report",
-          description: "There was an error generating your report. Please try again."
+          title: "Empty Report",
+          description: `No ${reportType} data found to generate report.`,
         });
-      } finally {
-        setIsLoading(false);
       }
-    }, 1000);
+    } catch (error) {
+      console.error("Error generating report:", error);
+      
+      toast({
+        variant: "destructive",
+        title: "Failed to generate report",
+        description: "There was an error generating your report. Please try again."
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Helper function to generate CSV content
-  const generateCSV = (data: Referral[] | Deal[]) => {
+  const generateCSV = (data: any[]) => {
     if (data.length === 0) return '';
     
     // Get headers from the first object
@@ -105,19 +101,19 @@ export function ReportGenerator() {
   const getSortOptions = () => {
     if (reportType === "referrals") {
       return [
-        { value: "clientName", label: "Client Name" },
-        { value: "referringCompany", label: "Referring Company" },
+        { value: "client_name", label: "Client Name" },
+        { value: "referring_company", label: "Referring Company" },
         { value: "status", label: "Status" },
-        { value: "createdAt", label: "Date Created" }
+        { value: "created_at", label: "Date Created" }
       ];
     } else {
       return [
         { value: "title", label: "Deal Title" },
-        { value: "clientName", label: "Client Name" },
+        { value: "client_name", label: "Client Name" },
         { value: "value", label: "Deal Value" },
         { value: "stage", label: "Deal Stage" },
-        { value: "expectedCloseDate", label: "Expected Close Date" },
-        { value: "createdAt", label: "Date Created" }
+        { value: "expected_close_date", label: "Expected Close Date" },
+        { value: "created_at", label: "Date Created" }
       ];
     }
   };
@@ -143,7 +139,7 @@ export function ReportGenerator() {
                 setReportType(value);
                 // Reset sort option to one that's available for the new report type
                 if (value === "referrals") {
-                  setSortBy("clientName");
+                  setSortBy("client_name");
                 } else {
                   setSortBy("title");
                 }

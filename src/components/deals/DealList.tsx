@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { 
   Card, 
@@ -30,17 +29,18 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { formatDistance } from "date-fns";
+import { dealService } from "@/services/api";
 
 export interface Deal {
   id: string;
   title: string;
-  referralId?: string;
+  referral_id?: string;
   value: string;
-  clientName: string;
+  client_name: string;
   stage: string;
-  expectedCloseDate: string;
+  expected_close_date: string;
   description?: string;
-  createdAt: string;
+  created_at: string;
 }
 
 interface DealListProps {
@@ -51,11 +51,22 @@ export function DealList({ refreshTrigger }: DealListProps) {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch deals from localStorage (in a real app, this would be an API call)
-    const storedDeals = JSON.parse(localStorage.getItem("deals") || "[]");
-    setDeals(storedDeals);
+    const fetchDeals = async () => {
+      try {
+        setIsLoading(true);
+        const data = await dealService.getAllDeals();
+        setDeals(data);
+      } catch (error) {
+        console.error("Error fetching deals:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDeals();
   }, [refreshTrigger]);
 
   const handleViewDetails = (deal: Deal) => {
@@ -125,11 +136,11 @@ export function DealList({ refreshTrigger }: DealListProps) {
                   {deals.map((deal) => (
                     <TableRow key={deal.id}>
                       <TableCell className="font-medium">{deal.title}</TableCell>
-                      <TableCell>{deal.clientName}</TableCell>
+                      <TableCell>{deal.client_name}</TableCell>
                       <TableCell>{formatCurrency(deal.value)}</TableCell>
                       <TableCell>{getStageBadge(deal.stage)}</TableCell>
                       <TableCell>
-                        {new Date(deal.expectedCloseDate).toLocaleDateString()}
+                        {new Date(deal.expected_close_date).toLocaleDateString()}
                       </TableCell>
                       <TableCell>
                         <Button 
@@ -181,7 +192,7 @@ export function DealList({ refreshTrigger }: DealListProps) {
                   <div className="flex items-center mb-2">
                     <span className="text-sm font-medium">Client</span>
                   </div>
-                  <p className="text-base">{selectedDeal.clientName}</p>
+                  <p className="text-base">{selectedDeal.client_name}</p>
                 </div>
               </div>
               
@@ -199,7 +210,7 @@ export function DealList({ refreshTrigger }: DealListProps) {
                     <span className="text-sm font-medium">Expected Close Date</span>
                   </div>
                   <p className="text-base">
-                    {new Date(selectedDeal.expectedCloseDate).toLocaleDateString()}
+                    {new Date(selectedDeal.expected_close_date).toLocaleDateString()}
                   </p>
                 </div>
               </div>
@@ -210,7 +221,7 @@ export function DealList({ refreshTrigger }: DealListProps) {
                   <span className="text-sm font-medium">Created</span>
                 </div>
                 <p className="text-base">
-                  {formatDistance(new Date(selectedDeal.createdAt), new Date(), {
+                  {formatDistance(new Date(selectedDeal.created_at), new Date(), {
                     addSuffix: true
                   })}
                 </p>

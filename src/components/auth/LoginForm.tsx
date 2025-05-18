@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { FolderCheck, Shield } from "lucide-react";
+import { authService } from "@/services/api";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
@@ -20,15 +21,12 @@ export function LoginForm() {
     setIsLoading(true);
 
     try {
-      // Here we would typically connect to a backend API for authentication
-      // For now, we'll simulate a successful login
-      console.log("Login attempt with:", { email, password });
+      // Call login API endpoint
+      const response = await authService.login(email, password);
       
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      // Simulate successful login
-      localStorage.setItem("user", JSON.stringify({ email, name: email.split('@')[0] }));
+      // Save token and user data
+      localStorage.setItem("token", response.token);
+      localStorage.setItem("user", JSON.stringify(response.user));
       localStorage.setItem("isAuthenticated", "true");
       
       toast({
@@ -38,6 +36,8 @@ export function LoginForm() {
       
       navigate("/dashboard");
     } catch (error) {
+      console.error("Login error:", error);
+      
       toast({
         variant: "destructive",
         title: "Authentication failed",

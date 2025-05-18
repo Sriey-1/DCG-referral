@@ -14,37 +14,38 @@ import {
   TrendingUp,
   Users
 } from "lucide-react";
-import { Deal } from "../deals/DealList";
-import { Referral } from "../referrals/ReferralList";
+import { dashboardService } from "@/services/api";
+
+interface DashboardStatsData {
+  referralCount: number;
+  dealCount: number;
+  totalDealValue: number;
+  conversionRate: number;
+}
 
 export function DashboardStats() {
-  const [referralCount, setReferralCount] = useState(0);
-  const [dealCount, setDealCount] = useState(0);
-  const [totalDealValue, setTotalDealValue] = useState(0);
-  const [conversionRate, setConversionRate] = useState(0);
+  const [stats, setStats] = useState<DashboardStatsData>({
+    referralCount: 0,
+    dealCount: 0,
+    totalDealValue: 0,
+    conversionRate: 0
+  });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch data from localStorage
-    const referrals: Referral[] = JSON.parse(localStorage.getItem("referrals") || "[]");
-    const deals: Deal[] = JSON.parse(localStorage.getItem("deals") || "[]");
-    
-    // Calculate stats
-    const refCount = referrals.length;
-    const dlCount = deals.length;
-    
-    // Calculate total deal value
-    const totalValue = deals.reduce((sum, deal) => sum + parseFloat(deal.value || "0"), 0);
-    
-    // Calculate conversion rate (deals with referrals / total referrals)
-    const dealsWithReferrals = deals.filter(deal => deal.referralId).length;
-    const calcConversionRate = refCount > 0 
-      ? Math.round((dealsWithReferrals / refCount) * 100) 
-      : 0;
-    
-    setReferralCount(refCount);
-    setDealCount(dlCount);
-    setTotalDealValue(totalValue);
-    setConversionRate(calcConversionRate);
+    const fetchStats = async () => {
+      try {
+        setIsLoading(true);
+        const data = await dashboardService.getStats();
+        setStats(data);
+      } catch (error) {
+        console.error("Error fetching dashboard stats:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchStats();
   }, []);
 
   // Format currency values
@@ -64,7 +65,9 @@ export function DashboardStats() {
           <FolderCheck className="h-4 w-4 text-dubai-gold" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{referralCount}</div>
+          <div className="text-2xl font-bold">
+            {isLoading ? "Loading..." : stats.referralCount}
+          </div>
           <p className="text-xs text-muted-foreground mt-1">
             Current active referrals in the system
           </p>
@@ -77,7 +80,9 @@ export function DashboardStats() {
           <BriefcaseBusiness className="h-4 w-4 text-dubai-gold" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{dealCount}</div>
+          <div className="text-2xl font-bold">
+            {isLoading ? "Loading..." : stats.dealCount}
+          </div>
           <p className="text-xs text-muted-foreground mt-1">
             Active deals in the pipeline
           </p>
@@ -90,7 +95,9 @@ export function DashboardStats() {
           <TrendingUp className="h-4 w-4 text-dubai-gold" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{formatCurrency(totalDealValue)}</div>
+          <div className="text-2xl font-bold">
+            {isLoading ? "Loading..." : formatCurrency(stats.totalDealValue)}
+          </div>
           <p className="text-xs text-muted-foreground mt-1">
             Combined value of all deals
           </p>
@@ -103,7 +110,9 @@ export function DashboardStats() {
           <Users className="h-4 w-4 text-dubai-gold" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{conversionRate}%</div>
+          <div className="text-2xl font-bold">
+            {isLoading ? "Loading..." : `${stats.conversionRate}%`}
+          </div>
           <p className="text-xs text-muted-foreground mt-1">
             Referrals converted to deals
           </p>
