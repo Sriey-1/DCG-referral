@@ -20,7 +20,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" />} />
-          <Route path="/login" element={<Navigate to="/dashboard" />} />
+          {/* Removed login route as we're bypassing authentication */}
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/referrals" element={<ReferralsPage />} />
           <Route path="/deals" element={<DealsPage />} />
