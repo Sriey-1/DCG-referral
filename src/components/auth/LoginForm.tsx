@@ -21,8 +21,11 @@ export function LoginForm() {
     setIsLoading(true);
 
     try {
+      console.log("Attempting login with:", { email, password });
+      
       // Call login API endpoint
       const response = await authService.login(email, password);
+      console.log("Login response:", response);
       
       // Save token and user data
       localStorage.setItem("token", response.token);
@@ -35,13 +38,20 @@ export function LoginForm() {
       });
       
       navigate("/dashboard");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login error:", error);
+      
+      // More detailed error handling
+      let errorMessage = "Please check your credentials and try again.";
+      if (error.response) {
+        console.log("Error response:", error.response);
+        errorMessage = error.response.data?.message || errorMessage;
+      }
       
       toast({
         variant: "destructive",
         title: "Authentication failed",
-        description: "Please check your credentials and try again.",
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);
@@ -70,6 +80,7 @@ export function LoginForm() {
               value={email} 
               onChange={(e) => setEmail(e.target.value)} 
               required 
+              autoComplete="email"
             />
           </div>
           <div className="space-y-2">
@@ -85,6 +96,7 @@ export function LoginForm() {
               value={password} 
               onChange={(e) => setPassword(e.target.value)} 
               required 
+              autoComplete="current-password"
             />
           </div>
           <Button 
@@ -113,6 +125,10 @@ export function LoginForm() {
             Create account
           </a>
         </p>
+        {/* Add demo login info during development */}
+        <div className="absolute bottom-[-40px] text-xs text-gray-500 text-center w-full">
+          <p>Demo credentials: demo@example.com / password123</p>
+        </div>
       </CardFooter>
     </Card>
   );

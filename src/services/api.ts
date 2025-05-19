@@ -25,15 +25,44 @@ api.interceptors.request.use(
   }
 );
 
+// Add response interceptor to handle common errors
+api.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    console.error('API error:', error);
+    if (error.response && error.response.status === 401) {
+      // Clear auth data on unauthorized
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('isAuthenticated');
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Auth services
 export const authService = {
   login: async (email: string, password: string) => {
-    const response = await api.post('/auth/login', { email, password });
-    return response.data;
+    try {
+      console.log('Login request to:', `${API_URL}/auth/login`);
+      const response = await api.post('/auth/login', { email, password });
+      console.log('Login response received:', response.status);
+      return response.data;
+    } catch (error) {
+      console.error('Login request failed:', error);
+      throw error;
+    }
   },
   register: async (name: string, email: string, password: string) => {
     const response = await api.post('/auth/register', { name, email, password });
     return response.data;
+  },
+  logout: () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('isAuthenticated');
   }
 };
 
