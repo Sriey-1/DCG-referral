@@ -125,9 +125,11 @@ export function LoginForm() {
             Create account
           </a>
         </p>
-        {/* Add demo login info during development */}
-        <div className="absolute bottom-[-40px] text-xs text-gray-500 text-center w-full">
-          <p>Demo credentials: demo@example.com / password123</p>
+        {/* Demo login info */}
+        <div className="absolute bottom-[-65px] text-xs text-gray-500 text-center w-full">
+          <p>Available accounts:</p>
+          <p>1. demo@example.com / password123</p>
+          <p>2. john@example.com / manager2023</p>
         </div>
       </CardFooter>
     </Card>

@@ -43,3 +43,7 @@ CREATE TABLE deals (
 -- Add initial demo user (password: password123)
 INSERT INTO users (name, email, password)
 VALUES ('Demo User', 'demo@example.com', '$2a$10$vmVuGQZ8xkEODRW5n9JQh.xUoSUWVvCRjwLmHYVdZGvzHRyagF8j2');
+
+-- Add second user (password: manager2023)
+INSERT INTO users (name, email, password)
+VALUES ('John Manager', 'john@example.com', '$2a$10$fRLDpFdH1wYa9tUv5Qtm/OlgbJUZ1YG1aDLnMnjT/xKMjRfKVh4oq');
