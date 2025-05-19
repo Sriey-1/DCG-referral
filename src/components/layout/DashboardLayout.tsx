@@ -8,16 +8,12 @@ interface DashboardLayoutProps {
 }
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
-  const navigate = useNavigate();
-
   useEffect(() => {
-    // Check if user is authenticated
-    const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
-    
-    if (!isAuthenticated) {
-      navigate("/login");
-    }
-  }, [navigate]);
+    // Auto-authenticate the user
+    localStorage.setItem("isAuthenticated", "true");
+    localStorage.setItem("user", JSON.stringify({ name: "Demo User", email: "demo@example.com" }));
+    localStorage.setItem("token", "dummy-token");
+  }, []);
 
   return (
     <div className="app-layout">
