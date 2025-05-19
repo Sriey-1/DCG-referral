@@ -1,24 +1,14 @@
 
-import { LoginForm } from "@/components/auth/LoginForm";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 const LoginPage = () => {
-  const navigate = useNavigate();
+  // Auto-authenticate the user by setting these values
+  localStorage.setItem("isAuthenticated", "true");
+  localStorage.setItem("user", JSON.stringify({ name: "Demo User", email: "demo@example.com" }));
+  localStorage.setItem("token", "dummy-token");
   
-  useEffect(() => {
-    // Check if already authenticated
-    const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
-    if (isAuthenticated) {
-      navigate("/dashboard");
-    }
-  }, [navigate]);
-
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <LoginForm />
-    </div>
-  );
+  // Redirect straight to dashboard
+  return <Navigate to="/dashboard" />;
 };
 
 export default LoginPage;
