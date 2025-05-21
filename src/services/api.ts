@@ -8,7 +8,7 @@ const API_URL = 'http://localhost:5000/api';
 const mockData = {
   referrals: [
     {
-      id: 1,
+      id: "1",
       referring_company: "Alpha Consulting",
       client_name: "Dubai Properties",
       contact_person: "Ahmed Al Mansouri",
@@ -18,10 +18,10 @@ const mockData = {
       status: "Active",
       notes: "Interested in commercial property valuation",
       created_at: "2023-09-15T10:30:00Z",
-      user_id: 1
+      user_id: "1"
     },
     {
-      id: 2,
+      id: "2",
       referring_company: "Beta Investments",
       client_name: "Emirates Group",
       contact_person: "Fatima Rahman",
@@ -31,10 +31,10 @@ const mockData = {
       status: "Completed",
       notes: "Portfolio restructuring project",
       created_at: "2023-08-20T14:45:00Z",
-      user_id: 1
+      user_id: "1"
     },
     {
-      id: 3,
+      id: "3",
       referring_company: "Gamma Partners",
       client_name: "Dubai Holding",
       contact_person: "Mohammed Al Qasimi",
@@ -44,56 +44,56 @@ const mockData = {
       status: "Pending",
       notes: "Requires follow-up on contract details",
       created_at: "2023-09-01T09:15:00Z",
-      user_id: 1
+      user_id: "1"
     }
   ],
   deals: [
     {
-      id: 1,
+      id: "1",
       title: "Dubai Properties Portfolio Valuation",
-      referral_id: 1,
+      referral_id: "1",
       value: "750000",
       client_name: "Dubai Properties",
       stage: "Proposal",
       expected_close_date: "2023-12-15",
       description: "Comprehensive valuation of commercial properties",
       created_at: "2023-09-18T11:30:00Z",
-      user_id: 1
+      user_id: "1"
     },
     {
-      id: 2,
+      id: "2",
       title: "Emirates Group Investment Strategy",
-      referral_id: 2,
+      referral_id: "2",
       value: "1200000",
       client_name: "Emirates Group",
       stage: "Negotiation",
       expected_close_date: "2023-11-30",
       description: "Strategic investment planning for next fiscal year",
       created_at: "2023-08-25T16:45:00Z",
-      user_id: 1
+      user_id: "1"
     },
     {
-      id: 3,
+      id: "3",
       title: "Dubai Holding Legal Framework",
-      referral_id: 3,
+      referral_id: "3",
       value: "580000",
       client_name: "Dubai Holding",
       stage: "Discovery",
       expected_close_date: "2024-01-20",
       description: "Legal framework evaluation for new subsidiaries",
       created_at: "2023-09-05T10:15:00Z",
-      user_id: 1
+      user_id: "1"
     }
   ],
   users: [
     {
-      id: 1,
+      id: "1",
       name: "Demo User",
       email: "demo@example.com",
       created_at: "2023-01-01T00:00:00Z"
     },
     {
-      id: 2,
+      id: "2",
       name: "John Manager",
       email: "john@example.com",
       created_at: "2023-01-02T00:00:00Z"
@@ -213,7 +213,7 @@ export const referralService = {
     await delay(800);
     
     const newReferral = {
-      id: mockData.referrals.length + 1,
+      id: String(mockData.referrals.length + 1),
       referring_company: referralData.referringCompany,
       client_name: referralData.clientName,
       contact_person: referralData.contactPerson,
@@ -223,7 +223,7 @@ export const referralService = {
       status: referralData.status,
       notes: referralData.notes,
       created_at: new Date().toISOString(),
-      user_id: 1
+      user_id: "1"
     };
     
     mockData.referrals.unshift(newReferral);
@@ -244,16 +244,16 @@ export const dealService = {
     await delay(800);
     
     const newDeal = {
-      id: mockData.deals.length + 1,
+      id: String(mockData.deals.length + 1),
       title: dealData.title,
-      referral_id: dealData.referralId,
+      referral_id: dealData.referralId || null,
       value: dealData.value,
       client_name: dealData.clientName,
       stage: dealData.stage,
       expected_close_date: dealData.expectedCloseDate,
       description: dealData.description,
       created_at: new Date().toISOString(),
-      user_id: 1
+      user_id: "1"
     };
     
     mockData.deals.unshift(newDeal);
